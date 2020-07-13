@@ -17,6 +17,16 @@ class Cluster(object):
         self.x = x
 
 class Slic(object):
+    @staticmethod
+    def read_image(inputimage):
+        image_rgb = io.imread(inputimage)
+        image_lab = color.rgb2lab(image_rgb)
+        return image_lab
+
+    @staticmethod
+    def save_image(inputimage):
+        pass
+
     def __init__(self, inputimage, K, M):
         self.K = K
         self.M = M
