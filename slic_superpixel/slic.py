@@ -24,6 +24,10 @@ class Slic(object):
         return image_lab
 
     @staticmethod
+    def show_image():
+        pass
+
+    @staticmethod
     def save_image(inputimage):
         pass
 
@@ -39,3 +43,23 @@ class Slic(object):
         self.clusters = []
         self.label = np.fill((self.height, self.width), -1)
         self.distance = np.fill((self.height, self.width), np.inf)
+
+    def iterate(self, iteration=10):
+        self.init_clusters()
+        self.move_to_lowest_gradient()
+
+        for i in range(iteration):
+            cluster_pixels()
+            update_cluster_position()
+       
+    def init_clusters(self):
+        h = self.S // 2
+        w = self.S // 2
+
+
+
+    def move_to_lowest_gradient(self):
+
+    def cluster_pixels(self):
+
+    def update_cluster_position(self):
