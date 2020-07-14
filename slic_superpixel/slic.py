@@ -53,13 +53,50 @@ class Slic(object):
             update_cluster_position()
        
     def init_clusters(self):
-        h = self.S // 2
-        w = self.S // 2
+        y = self.S // 2
+        x = self.S // 2
 
+        while h < self.height:
+            while w < self.width:
+                self.clusters.append(self.make_cluster(y, x))
+                x += self.S
 
+            x = self.S // 2
+            y += self.S
+
+    def make_cluster(self, h: int, w: int):
+        return Cluster(self.image[h][w][0], self.image[h][w][1], self.image[h][w][2],
+                       h, w)
 
     def move_to_lowest_gradient(self):
+        for cluster in self.clusters:
+            current_gradient = self.get_gradient(cluster.y, cluster.x)
+
+            for dh in range(-1, 2):
+                for dw in range(-1, 2):
+                    _y = cluster.h + dh
+                    _x = cluster.w + dw
+                    new_gradient = self.get_gradient(_y, _x)
+                    if new_gradient < current_gradient:
+                        cluster.update(self.image[_y][_x][0],
+                                       self.image[_y][_x][1],
+                                       self.image[_y][_x][2],
+                                       _y,
+                                       _x)
+                        current_gradient = new_gradient
+
+    def get_gradient(self, y, x):
+        if y + 1 > self.width:
+            y = self.width - 2 
+        if x + 1 > self.height:
+            x = self.height - 2
+
+        return self.image[y + 1][x + 1][0] - self.image[y][x][0] + \
+               self.image[y + 1][x + 1][1] - self.image[y][x][1] + \
+               self.image[y + 1][x + 1][2] - self.image[y][x][2]
 
     def cluster_pixels(self):
+        pass
 
     def update_cluster_position(self):
+        pass
