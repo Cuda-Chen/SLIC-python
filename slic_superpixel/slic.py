@@ -6,7 +6,8 @@ class Cluster(object):
 
     def __init__(self, l, a, b, y, x):
         self.update(l, a, b, y, x)
-        self.number = cluster_index
+        self.pixels = []
+        self.index = cluster_index
         Cluster.cluster_index += 1
 
     def update(self, l, a, b, y, x):
@@ -28,7 +29,7 @@ class Slic(object):
         pass
 
     @staticmethod
-    def save_image(inputimage):
+    def save_image():
         pass
 
     def __init__(self, inputimage, K, M):
@@ -41,7 +42,7 @@ class Slic(object):
         self.S = int(np.sqrt((self.height * self.width) / self.K))
 
         self.clusters = []
-        self.label = np.fill((self.height, self.width), -1)
+        self.label = {}
         self.distance = np.fill((self.height, self.width), np.inf)
 
     def iterate(self, iteration=10):
@@ -96,7 +97,50 @@ class Slic(object):
                self.image[y + 1][x + 1][2] - self.image[y][x][2]
 
     def cluster_pixels(self):
-        pass
+        for cluster in self.clusters:
+            for y in range(cluster.y - 2 * self.S, cluster.y + 2 * self.S):
+                if y < 0 or y >= self.height:
+                    continue
+
+                for x in range(cluster.x - 2 * self.S, cluster.x + 2 * self.S):
+                    if x < 0 or x >= self.width:
+                        continue
+
+                    L, A, B = self.image[y][x]
+                    Dc = np.sqrt(np.power(L - cluster.l, 2) +
+                                 np.power(A - cluster.a, 2) + 
+                                 np.power(B - cluster.b, 2))
+                    Ds = np.sqrt(np.power(y - cluster.y, 2) +
+                                 np.power(x - cluster.x, 2))
+                    D = np.sqrt(np.power(Dc / self.M, 2) + np.power(Ds / self.S, 2))
+
+                    if D < self.distance[y][x]:
+                        if (y, x) not in self.label:
+                            self.label[(y, x)] = cluster
+                            cluster.pixels.append((y, x))
+                        else:
+                            self.label[(y, x)].pixels.remove((y, x))
+                            self.label[(y, x)] = cluster
+                            cluster.pixels.append((y, x))
+                        self.distance[y][x] = D
+                            
 
     def update_cluster_position(self):
-        pass
+        for cluster in self.clusters:
+            sum_h = sum_w = 0
+            pixel_count = len(cluster.pixels)
+
+            for pixel in cluster.pixels:
+                sum_h += pixel[0]
+                sum_w += pixel[1]
+                
+            new_y = sum_h // pixel_count
+            new_x = sum_w // pixel_count
+            cluster.update(self.image[new_y][new_x][0], 
+                           self.image[new_y][new_x][1],
+                           self.image[new_y][new_x][2],
+                           new_y,
+                           new_x)
+
+if __name__ == '__main__':
+    print("I am fine")
