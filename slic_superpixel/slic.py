@@ -1,5 +1,7 @@
 import numpy as np
 from skimage import io, color
+import matplotlib.pyplot as plt
+from tqdm import trange
 
 class Cluster(object):
     cluster_index = 0
@@ -7,7 +9,7 @@ class Cluster(object):
     def __init__(self, l, a, b, y, x):
         self.update(l, a, b, y, x)
         self.pixels = []
-        self.index = cluster_index
+        self.index = self.cluster_index
         Cluster.cluster_index += 1
 
     def update(self, l, a, b, y, x):
@@ -24,9 +26,20 @@ class Slic(object):
         image_lab = color.rgb2lab(image_rgb)
         return image_lab
 
-    @staticmethod
-    def show_image():
-        pass
+    def show_image(self):
+        out_image = np.copy(self.image)
+        for cluster in self.clusters:
+            for pixel in cluster.pixels:
+                out_image[pixel[0]][pixel[1]][0] = cluster.l
+                out_image[pixel[0]][pixel[1]][1] = cluster.a
+                out_image[pixel[0]][pixel[1]][2] = cluster.b
+            out_image[cluster.y][cluster.x][0] = 0
+            out_image[cluster.y][cluster.x][1] = 0
+            out_image[cluster.y][cluster.x][2] = 0
+
+        out_image_rgb = color.lab2rgb(out_image)
+        io.imshow(out_image_rgb)
+        plt.show()
 
     @staticmethod
     def save_image():
@@ -36,38 +49,38 @@ class Slic(object):
         self.K = K
         self.M = M
 
-        self.image = read_image(inputimage)
+        self.image = self.read_image(inputimage)
         self.height = self.image.shape[0]
         self.width = self.image.shape[1]
         self.S = int(np.sqrt((self.height * self.width) / self.K))
 
         self.clusters = []
         self.label = {}
-        self.distance = np.fill((self.height, self.width), np.inf)
+        self.distance = np.full((self.height, self.width), np.inf)
 
     def iterate(self, iteration=10):
         self.init_clusters()
         self.move_to_lowest_gradient()
 
-        for i in range(iteration):
-            cluster_pixels()
-            update_cluster_position()
+        for i in trange(iteration):
+            self.cluster_pixels()
+            self.update_cluster_position()
        
     def init_clusters(self):
         y = self.S // 2
         x = self.S // 2
 
-        while h < self.height:
-            while w < self.width:
+        while y < self.height:
+            while x < self.width:
                 self.clusters.append(self.make_cluster(y, x))
                 x += self.S
 
             x = self.S // 2
             y += self.S
 
-    def make_cluster(self, h: int, w: int):
-        return Cluster(self.image[h][w][0], self.image[h][w][1], self.image[h][w][2],
-                       h, w)
+    def make_cluster(self, y, x):
+        return Cluster(self.image[y][x][0], self.image[y][x][1], self.image[y][x][2],
+                       y, x)
 
     def move_to_lowest_gradient(self):
         for cluster in self.clusters:
@@ -75,8 +88,8 @@ class Slic(object):
 
             for dh in range(-1, 2):
                 for dw in range(-1, 2):
-                    _y = cluster.h + dh
-                    _x = cluster.w + dw
+                    _y = cluster.y + dh
+                    _x = cluster.x + dw
                     new_gradient = self.get_gradient(_y, _x)
                     if new_gradient < current_gradient:
                         cluster.update(self.image[_y][_x][0],
@@ -143,4 +156,6 @@ class Slic(object):
                            new_x)
 
 if __name__ == '__main__':
-    print("I am fine")
+    myslic = Slic('../lenna.bmp', 500, 30)
+    myslic.iterate()
+    myslic.show_image()
