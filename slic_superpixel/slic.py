@@ -2,6 +2,7 @@ import numpy as np
 from skimage import io, color
 import matplotlib.pyplot as plt
 from tqdm import trange
+import math
 
 class Cluster(object):
     cluster_index = 0
@@ -52,7 +53,7 @@ class Slic(object):
         self.image = self.read_image(inputimage)
         self.height = self.image.shape[0]
         self.width = self.image.shape[1]
-        self.S = int(np.sqrt((self.height * self.width) / self.K))
+        self.S = int(math.sqrt((self.height * self.width) / self.K))
 
         self.clusters = []
         self.label = {}
@@ -120,12 +121,12 @@ class Slic(object):
                         continue
 
                     L, A, B = self.image[y][x]
-                    Dc = np.sqrt(np.power(L - cluster.l, 2) +
-                                 np.power(A - cluster.a, 2) + 
-                                 np.power(B - cluster.b, 2))
-                    Ds = np.sqrt(np.power(y - cluster.y, 2) +
-                                 np.power(x - cluster.x, 2))
-                    D = np.sqrt(np.power(Dc / self.M, 2) + np.power(Ds / self.S, 2))
+                    Dc = math.sqrt(math.pow(L - cluster.l, 2) +
+                                 math.pow(A - cluster.a, 2) + 
+                                 math.pow(B - cluster.b, 2))
+                    Ds = math.sqrt(math.pow(y - cluster.y, 2) +
+                                 math.pow(x - cluster.x, 2))
+                    D = math.sqrt(math.pow(Dc / self.M, 2) + math.pow(Ds / self.S, 2))
 
                     if D < self.distance[y][x]:
                         if (y, x) not in self.label:
