@@ -39,9 +39,9 @@ class Slic(object):
                 out_image[pixel[0]][pixel[1]][0] = cluster.l
                 out_image[pixel[0]][pixel[1]][1] = cluster.a
                 out_image[pixel[0]][pixel[1]][2] = cluster.b
-            out_image[cluster.y][cluster.x][0] = 0
+            '''out_image[cluster.y][cluster.x][0] = 0
             out_image[cluster.y][cluster.x][1] = 0
-            out_image[cluster.y][cluster.x][2] = 0
+            out_image[cluster.y][cluster.x][2] = 0'''
 
         out_image_rgb = color.lab2rgb(out_image)
         io.imshow(out_image_rgb)
