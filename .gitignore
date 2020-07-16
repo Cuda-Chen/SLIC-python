@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# No output images (except dog.png)
+*.png
+!dog.png

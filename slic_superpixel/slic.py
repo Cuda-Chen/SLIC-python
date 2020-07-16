@@ -23,8 +23,13 @@ class Cluster(object):
 class Slic(object):
     @staticmethod
     def read_image(inputimage):
-        image_rgb = io.imread(inputimage)
-        image_lab = color.rgb2lab(image_rgb)
+        image = io.imread(inputimage)
+
+        # If input image format is RGBA, remove the Alpha channel.
+        if image.shape[2] == 4:
+            image = color.rgba2rgb(image)
+
+        image_lab = color.rgb2lab(image)
         return image_lab
 
     def show_image(self):
@@ -42,9 +47,16 @@ class Slic(object):
         io.imshow(out_image_rgb)
         plt.show()
 
-    @staticmethod
-    def save_image():
-        pass
+    def save_image(self, outputimage):
+        out_image = np.copy(self.image)
+        for cluster in self.clusters:
+            for pixel in cluster.pixels:
+                out_image[pixel[0]][pixel[1]][0] = cluster.l
+                out_image[pixel[0]][pixel[1]][1] = cluster.a
+                out_image[pixel[0]][pixel[1]][2] = cluster.b
+
+        out_image_rgb = color.lab2rgb(out_image)
+        io.imsave(outputimage, out_image_rgb)
 
     def __init__(self, inputimage, K, M):
         self.K = K
@@ -158,5 +170,7 @@ class Slic(object):
 
 if __name__ == '__main__':
     myslic = Slic('../lenna.bmp', 500, 30)
+    #myslic = Slic('dog.png', 400, 40)
     myslic.iterate()
     myslic.show_image()
+    #myslic.save_image('foo.png')
