@@ -38,10 +38,22 @@ class Slic(object):
             for pixel in cluster.pixels:
                 out_image[pixel[0]][pixel[1]][0] = cluster.l
                 out_image[pixel[0]][pixel[1]][1] = cluster.a
+                out_image[pixel[0]][pixel[1]][2] = cluster.b 
+
+        out_image_rgb = color.lab2rgb(out_image)
+        io.imshow(out_image_rgb)
+        plt.show()
+
+    def show_image_with_cluster_center(self):
+        out_image = np.copy(self.image)
+        for cluster in self.clusters:
+            for pixel in cluster.pixels:
+                out_image[pixel[0]][pixel[1]][0] = cluster.l
+                out_image[pixel[0]][pixel[1]][1] = cluster.a
                 out_image[pixel[0]][pixel[1]][2] = cluster.b
-            '''out_image[cluster.y][cluster.x][0] = 0
+            out_image[cluster.y][cluster.x][0] = 0
             out_image[cluster.y][cluster.x][1] = 0
-            out_image[cluster.y][cluster.x][2] = 0'''
+            out_image[cluster.y][cluster.x][2] = 0
 
         out_image_rgb = color.lab2rgb(out_image)
         io.imshow(out_image_rgb)
@@ -80,16 +92,10 @@ class Slic(object):
             self.update_cluster_position()
        
     def init_clusters(self):
-        y = self.S // 2
-        x = self.S // 2
-
-        while y < self.height:
-            while x < self.width:
+        for y in range(self.S // 2, self.height, self.S):
+            for x in range(self.S // 2, self.width, self.S):
                 self.clusters.append(self.make_cluster(y, x))
-                x += self.S
 
-            x = self.S // 2
-            y += self.S
 
     def make_cluster(self, y, x):
         return Cluster(self.image[y][x][0], self.image[y][x][1], self.image[y][x][2],
@@ -170,7 +176,8 @@ class Slic(object):
 
 if __name__ == '__main__':
     myslic = Slic('../lenna.bmp', 500, 30)
-    #myslic = Slic('dog.png', 400, 40)
+    #myslic = Slic('../dog.png', 400, 40)
     myslic.iterate()
-    myslic.show_image()
+    #myslic.show_image()
+    myslic.show_image_with_cluster_center()
     #myslic.save_image('foo.png')
