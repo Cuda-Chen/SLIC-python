@@ -119,10 +119,10 @@ class Slic(object):
                         current_gradient = new_gradient
 
     def get_gradient(self, y, x):
-        if y + 1 > self.width:
-            y = self.width - 2 
-        if x + 1 > self.height:
-            x = self.height - 2
+        if x + 1 >= self.width:
+            x = self.width - 2 
+        if y + 1 >= self.height:
+            y = self.height - 2
 
         return self.image[y + 1][x + 1][0] - self.image[y][x][0] + \
                self.image[y + 1][x + 1][1] - self.image[y][x][1] + \
@@ -175,8 +175,8 @@ class Slic(object):
                            new_x)
 
 if __name__ == '__main__':
-    myslic = Slic('../lenna.bmp', 500, 30)
-    #myslic = Slic('../dog.png', 400, 40)
+    #myslic = Slic('../lenna.bmp', 500, 30)
+    myslic = Slic('../dog.png', 400, 40)
     myslic.iterate()
     #myslic.show_image()
     myslic.show_image_with_cluster_center()
