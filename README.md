@@ -25,3 +25,7 @@ optional arguments:
   -iter ITERATIONS, --iterations ITERATIONS
                         number of SLIC iterations
 ```
+
+## Reference
+This work is inspired by laixintao.
+You can visit this work here: https://github.com/laixintao/slic-python-implementation
